@@ -1,0 +1,23 @@
+name: HARiges Energia
+version: "1.0.0"
+slug: hariges_energy
+description: Dashboard independente de monitoramento energético por setor
+url: https://github.com/leonesmoura/ha-energy-dashboard
+arch:
+  - amd64
+  - aarch64
+  - armv7
+startup: application
+boot: auto
+init: false
+homeassistant_api: true
+ports:
+  3000/tcp: 8099
+ports_description:
+  3000/tcp: Interface web para clientes
+webui: http://[HOST]:[PORT:3000]
+watchdog: http://[HOST]:[PORT:3000]/api/setup
+panel_icon: mdi:transmission-tower
+panel_title: HARiges Energia
+options: {}
+schema: {}

@@ -1,0 +1,8 @@
+.env
+.git
+.gitignore
+data
+test
+scripts
+node_modules
+*.log

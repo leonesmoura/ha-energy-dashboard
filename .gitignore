@@ -1,0 +1,5 @@
+.env
+data/runtime.json
+node_modules/
+*.log
+dist/
