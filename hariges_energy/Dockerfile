@@ -1,10 +1,11 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-RUN apk add --no-cache nodejs
+RUN apk add --no-cache nodejs npm
 
 WORKDIR /app
-COPY package.json server.js ./
+COPY package*.json server.js ./
+RUN npm install --omit=dev
 COPY lib ./lib
 COPY public ./public
 COPY run.sh /run.sh

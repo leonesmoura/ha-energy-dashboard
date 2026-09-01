@@ -1,5 +1,5 @@
 name: HARiges Energia
-version: "1.1.0"
+version: "1.1.1"
 slug: hariges_energy
 description: Dashboard independente de monitoramento energético por setor
 url: https://github.com/leonesmoura/ha-energy-dashboard
