@@ -7,6 +7,12 @@ export class HomeAssistant {
     if (!response.ok) throw Object.assign(new Error(`Home Assistant respondeu ${response.status}`), { status: 502 });
     return response.json();
   }
+  async binary(path) {
+    if (!this.configured) throw Object.assign(new Error('Home Assistant n�o configurado'), { status: 503 });
+    const response = await fetch(`${this.url}${path}`, { headers: { Authorization: `Bearer ${this.token}` }, signal: AbortSignal.timeout(10000) });
+    if (!response.ok) throw Object.assign(new Error(`Home Assistant respondeu ${response.status}`), { status: 502 });
+    return { body: Buffer.from(await response.arrayBuffer()), contentType: response.headers.get('content-type') || 'application/octet-stream' };
+  }
   async states(ids) {
     const states = await Promise.all(ids.map(async id => {
       try { return await this.request(`/api/states/${encodeURIComponent(id)}`); }

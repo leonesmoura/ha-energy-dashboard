@@ -35,7 +35,8 @@ const publicUser = user => ({ id: user.id, username: user.username, name: user.n
 const allowedDashboards = user => store.data.dashboards.filter(d => user.role === 'admin' || user.dashboards.includes(d.id));
 const entityIds = dashboard => {
   const e = dashboard.entities;
-  return [e.energy, e.power, e.powerFactor, e.frequency, e.temperature, e.status, ...e.phases.flatMap(p => [p.voltage, p.current, p.power, p.factor, p.energy])];
+  const circuits = (dashboard.circuits || []).map(circuit => circuit.entity).filter(Boolean);
+  return [e.energy, e.power, e.powerFactor, e.frequency, e.temperature, e.status, ...e.phases.flatMap(p => [p.voltage, p.current, p.power, p.factor, p.energy]), ...circuits];
 };
 
 async function api(req, res, url) {
@@ -64,12 +65,26 @@ async function api(req, res, url) {
   const user = currentUser(req);
   if (!user) return send(res, 401, { error: 'Sessão expirada' });
   if (req.method === 'GET' && url.pathname === '/api/me') return send(res, 200, { user: publicUser(user), dashboards: allowedDashboards(user), haConfigured: ha.configured });
-  const dashboardMatch = url.pathname.match(/^\/api\/dashboards\/([^/]+)\/(live|history)$/);
+  const dashboardMatch = url.pathname.match(/^\/api\/dashboards\/([^/]+)\/(live|history|panel-image)$/);
   if (req.method === 'GET' && dashboardMatch) {
     const dashboard = allowedDashboards(user).find(d => d.id === dashboardMatch[1]);
     if (!dashboard) return send(res, 403, { error: 'Setor não autorizado' });
     if (dashboardMatch[2] === 'live') return send(res, 200, { states: await ha.states(entityIds(dashboard)), timestamp: new Date().toISOString() });
-    return send(res, 200, { history: await ha.history([dashboard.entities.power], Number(url.searchParams.get('hours') || 24)) });
+    if (dashboardMatch[2] === 'panel-image') {
+      if (!dashboard.panelImage) return send(res, 404, { error: 'Imagem nao configurada' });
+      const image = await ha.binary(`/api/image/serve/${encodeURIComponent(dashboard.panelImage)}/original`);
+      res.writeHead(200, { 'Content-Type': image.contentType, 'Cache-Control': 'private, max-age=300' });
+      res.end(image.body);
+      return;
+    }
+    const historyIds = [
+      dashboard.entities.power,
+      ...dashboard.entities.phases.flatMap(phase => [phase.voltage, phase.power])
+    ];
+    return send(res, 200, {
+      history: await ha.history(historyIds, Number(url.searchParams.get('hours') || 24)),
+      entities: historyIds
+    });
   }
   if (user.role !== 'admin') return send(res, 403, { error: 'Acesso restrito ao administrador' });
   if (req.method === 'GET' && url.pathname === '/api/admin/users') return send(res, 200, { users: store.data.users.map(publicUser), dashboards: store.data.dashboards.map(({ id, name, color }) => ({ id, name, color })) });
