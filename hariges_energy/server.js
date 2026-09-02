@@ -61,29 +61,6 @@ async function api(req, res, url) {
     store.data.users.push(user); store.save();
     return send(res, 201, { ok: true });
   }
-  if (req.method === 'POST' && url.pathname === '/api/recovery/admin') {
-    const authorization = String(req.headers.authorization || '');
-    const accessToken = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
-    const haUser = await ha.currentUser(accessToken);
-    if (!haUser.is_admin) return send(res, 403, { error: 'Somente um administrador do Home Assistant pode recuperar o acesso' });
-    const body = await readBody(req);
-    const username = String(body.username || '').trim();
-    const password = String(body.password || '');
-    if (!username || password.length < 10) return send(res, 400, { error: 'Informe usuario e senha com ao menos 10 caracteres' });
-    let admin = store.data.users.find(user => user.role === 'admin');
-    if (!admin) {
-      admin = { id: crypto.randomUUID(), role: 'admin', dashboards: [] };
-      store.data.users.push(admin);
-    }
-    admin.username = username;
-    admin.name = String(body.name || username).trim();
-    admin.password = hashPassword(password);
-    admin.role = 'admin';
-    admin.dashboards = store.data.dashboards.map(dashboard => dashboard.id);
-    sessions.clear();
-    store.save();
-    return send(res, 200, { ok: true, username: admin.username });
-  }
 
   const user = currentUser(req);
   if (!user) return send(res, 401, { error: 'Sessão expirada' });
