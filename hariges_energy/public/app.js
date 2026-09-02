@@ -122,16 +122,18 @@ function gauge({ title, reading, unit, min, max, decimals, needleColor, mode = '
 
   return `<article class="surface gauge-card">
     <h3>${esc(title)}</h3>
-    <svg class="gauge" viewBox="0 0 240 150" role="img" aria-label="${esc(title)}: ${format(reading, decimals)} ${esc(unit)}">
+    <svg class="gauge" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
       <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${stops}</linearGradient></defs>
       <path class="gauge-track" d="M 35 116 A 85 85 0 0 1 205 116"/>
       <path class="gauge-color" d="M 35 116 A 85 85 0 0 1 205 116" stroke="url(#${id})"/>
       <line class="gauge-needle" x1="120" y1="116" x2="${needleX.toFixed(1)}" y2="${needleY.toFixed(1)}" stroke="${needleColor}"/>
       <circle cx="120" cy="116" r="5" fill="${needleColor}"/>
-      <text class="gauge-value" x="120" y="126" text-anchor="middle">${format(reading, decimals)} ${esc(unit)}</text>
-      <text class="gauge-primary" x="120" y="142" text-anchor="middle">${esc(primary)}</text>
     </svg>
-    <div class="gauge-secondary">${esc(secondary)}</div>
+    <div class="gauge-readout">
+      <div class="gauge-value">${format(reading, decimals)} ${esc(unit)}</div>
+      <div class="gauge-primary">${esc(primary)}</div>
+      <div class="gauge-secondary">${esc(secondary)}</div>
+    </div>
   </article>`;
 }
 

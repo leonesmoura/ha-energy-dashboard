@@ -356,8 +356,8 @@ button { color: inherit; }
 .power-gauges { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 .gauge-card {
-  min-height: 188px;
-  padding: 13px 15px 7px;
+  min-height: 230px;
+  padding: 13px 15px 14px;
 }
 
 .gauge-card h3 {
@@ -391,20 +391,27 @@ button { color: inherit; }
   stroke-linecap: round;
 }
 
+.gauge-readout {
+  margin-top: 8px;
+  text-align: center;
+  line-height: 1.35;
+}
+
 .gauge-value {
-  fill: #22c55e;
-  font-size: 21px;
+  color: #22c55e;
+  font-size: 22px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .gauge-primary {
-  fill: #f0f3f2;
+  color: #f0f3f2;
   font-size: 10px;
   font-weight: 750;
 }
 
 .gauge-secondary {
-  margin-top: -5px;
+  margin-top: 2px;
   color: #d7ddda;
   font-size: 10px;
   font-weight: 750;
@@ -640,7 +647,7 @@ button { color: inherit; }
   .content { padding: 24px 12px 40px; }
   .history-chart { height: 220px; }
   .voltage-gauges { grid-template-columns: 1fr; }
-  .gauge-card { min-height: 176px; }
+  .gauge-card { min-height: 230px; }
 }
 
 @media (max-width: 620px) {
